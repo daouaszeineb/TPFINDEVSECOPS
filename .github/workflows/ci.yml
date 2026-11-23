@@ -86,4 +86,4 @@ jobs:
           mvn -B org.sonarsource.scanner.maven::sonar-maven-plugin:sonar
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=https://sonarcloud.io
