@@ -22,14 +22,11 @@ jobs:
           distribution: 'temurin'
 
 
+      # Gitleaks scan (before compilation)
       - name: Run Gitleaks scan
-        run: |
-          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz | tar -xz gitleaks
-          ./gitleaks detect --source . --verbose --redact \
-            --report-format sarif --report-path results.sarif
+        uses: zricethezav/gitleaks-action@v2
       # Upload the Gitleaks report
       - name: Upload Gitleaks report
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-report
@@ -81,10 +78,12 @@ jobs:
 
         # Run SonarCloud scan
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: .
-          args: >
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+        
+        run: >
+          mvn -B org.sonarsource.scanner.maven::sonar-maven-plugin:sonar
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
